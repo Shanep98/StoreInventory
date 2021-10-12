@@ -39,10 +39,9 @@ def clean_price(price_str):
     else:
         return price
     
-    
-def clean_date(date_str):
+
     date_str = str(date_str)
-    date_str = date_str.strftime('%m/%d/%Y')
+    date_str = date_str.strptime('%m/%d/%Y')
     try:
         month = int(split_date[0])
         day = int(split_date[1])
@@ -90,7 +89,7 @@ def add_csv():
                 name = row[0]
                 price = clean_price(row[1])
                 quantity = row[2]
-                date_updated = row[3]#need to clean
+                date_updated = datetime.datetime.strptime(row[3], '%m/%d/%Y').date()
                 new_item = Product(name=name, price=price, quantity=quantity, date_updated=date_updated)
                 session.add(new_item)
             session.commit()
@@ -138,13 +137,8 @@ def app():
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
-    # add_csv()
+    add_csv()
     
-    # for item in session.query(Product):
-    #     print(item)
-    # test = clean_date(3/10/2018)
-    # print(test)
-    date = 3/10/2018
-    # date = str(date)
-    # date = date.datetime.strftime('%m-%d-%Y')
-    print(date)
+    for item in session.query(Product):
+        print(item)
+   
