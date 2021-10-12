@@ -17,11 +17,11 @@ class Product(Base):
     __tablename__ = 'products'
     
     id = Column(Integer, primary_key=True)
-    product_name = Column('Product', String)
-    product_price = Column('Price', Integer)
-    product_quantity = Column('Quantity', Integer)
+    name = Column('Product', String)
+    price = Column('Price', Integer)
+    quantity = Column('Quantity', Integer)
     date_updated = Column('Added', Date)
     
     def __repr__(self):
-        return f'Product: {self.product_name} Price: {self.product_price} Quantity: {self.product_quantity} Added: {self.date_updated}'
+        return f'Product: {self.name} Price: {self.price} Quantity: {self.quantity} Added: {self.date_updated}'
     
