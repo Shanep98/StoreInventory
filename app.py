@@ -39,25 +39,6 @@ def clean_price(price_str):
     else:
         return price
     
-
-    date_str = str(date_str)
-    date_str = date_str.strptime('%m/%d/%Y')
-    try:
-        month = int(split_date[0])
-        day = int(split_date[1])
-        year = int(split_date[2])
-        return_date = datetime.date(year, month, day)
-    except ValueError:
-        input('''
-               \n*****DATE ERROR*****
-               \rThe date format should include a valid Month Day from the past
-               \rEx: January 15, 2003
-               \rPress enter to try again.
-               \r*************************''')
-        return
-    else:    
-        return return_date
-    
     
 def clean_id(id_str, options):
     try:
@@ -92,6 +73,10 @@ def add_csv():
                 date_updated = datetime.datetime.strptime(row[3], '%m/%d/%Y').date()
                 new_item = Product(name=name, price=price, quantity=quantity, date_updated=date_updated)
                 session.add(new_item)
+            elif product_in_db != None:
+                product_in_db.price = clean_price(row[1])
+                product_in_db.quantity = row[2]
+                product_in_db.date_updated = datetime.datetime.strptime(row[3], '%m/%d/%Y').date()
             session.commit()
 # product_id, product_name,product_price,product_quantity,date_updated
 
@@ -138,7 +123,7 @@ def app():
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
     add_csv()
-    
+    app()
     for item in session.query(Product):
         print(item)
    
