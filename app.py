@@ -20,7 +20,7 @@ def menu():
 
 def clean_price(price_str):
     try:
-        price = int(float(price_str.replace("$","")) * 100)
+        price = int(float(price_str.replace("$","")))
     except ValueError:
         input('''
               \n***Price Error***
@@ -28,7 +28,20 @@ def clean_price(price_str):
               \r Ex: 12.99
               \rPress ENTER to try again.''')
     else:
-        return price
+        return int(price *100)
+    
+    
+def clean_amount(amount_str):
+    try:
+        amount = int(amount_str)
+    except ValueError:
+        input('''
+              \n***Amount Error***
+              \rPlease reenter a number for the amount in stock.
+              \r Ex: 56
+              \rPress ENTER to try again.''')
+    else:
+        return int(amount)
     
     
 def clean_id(id_str, options):
@@ -76,7 +89,7 @@ def add_csv():
         data = csv.reader(csvfile)
         next(data)
         for row in data:
-            product_in_db = session.query(Product).filter(Product.name==row[0]).one_or_none()
+            product_in_db = session.query(Product).filter(Product.name==row[0]).order_by(Product.date_updated.desc()).one_or_none()
             if product_in_db == None:
                 name = row[0]
                 price = clean_price(row[1])
@@ -84,10 +97,6 @@ def add_csv():
                 date_updated = datetime.datetime.strptime(row[3], '%m/%d/%Y').date()
                 new_item = Product(name=name, price=price, quantity=quantity, date_updated=date_updated)
                 session.add(new_item)
-            elif product_in_db != None:
-                product_in_db.price = clean_price(row[1])
-                product_in_db.quantity = row[2]
-                product_in_db.date_updated = datetime.datetime.strptime(row[3], '%m/%d/%Y').date()
             session.commit()
 # product_id, product_name,product_price,product_quantity,date_updated
 
@@ -109,9 +118,24 @@ def app():
                              \rExample of Product name with a description "Bagel - Whole White Sesame"
                              \r > ''')
             new_name = str(new_name.title())
-            new_amount = int(input("\nHow much of this Product are we adding into our stock? > "))
-            new_price = int(clean_price(input("\nHow much does the Product cost? > ")))
-            new_date = clean_date(input('\nWhen was this product added(format mm/dd/yyyy)? > '))
+            amount_error = True
+            while amount_error:
+                new_amount = input("\nHow much of this Product are we adding into our stock? > ")
+                new_amount = clean_amount(new_amount)
+                if type(new_amount) == int:
+                    amount_error = False
+            price_error = True
+            while price_error:
+                new_price = input("\nHow much does the Product cost(Ex: 6.99)? > ")
+                new_price = clean_price(new_price)
+                if type(new_price) == int:
+                    price_error = False
+            date_error = True
+            while date_error:
+                new_date = input('\nWhen was this product added(format mm/dd/yyyy)? > ')
+                new_date = clean_date(new_date)
+                if type(new_date) == datetime.date:
+                    date_error = False
             search_db = session.query(Product).filter(Product.name==new_name).one_or_none()
             if search_db == None:
                 new_item = Product(name=new_name, price=new_price, quantity=new_amount, date_updated=new_date)
