@@ -89,7 +89,7 @@ def add_csv():
         data = csv.reader(csvfile)
         next(data)
         for row in data:
-            product_in_db = session.query(Product).filter(Product.name==row[0]).order_by(Product.date_updated.desc()).one_or_none()
+            product_in_db = session.query(Product).filter(Product.name==row[0]).one_or_none()
             if product_in_db == None:
                 name = row[0]
                 price = clean_price(row[1])
@@ -97,6 +97,12 @@ def add_csv():
                 date_updated = datetime.datetime.strptime(row[3], '%m/%d/%Y').date()
                 new_item = Product(name=name, price=price, quantity=quantity, date_updated=date_updated)
                 session.add(new_item)
+            else:
+                new_date_updated = datetime.datetime.strptime(row[3], '%m/%d/%Y').date()
+                if product_in_db.date_updated < new_date_updated:
+                    price = clean_price(row[1])
+                    quantity = row[2]
+                    date_updated = new_date_updated
             session.commit()
 # product_id, product_name,product_price,product_quantity,date_updated
 
