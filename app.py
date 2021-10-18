@@ -100,9 +100,9 @@ def add_csv():
             else:
                 new_date_updated = datetime.datetime.strptime(row[3], '%m/%d/%Y').date()
                 if product_in_db.date_updated < new_date_updated:
-                    price = clean_price(row[1])
-                    quantity = row[2]
-                    date_updated = new_date_updated
+                    product_in_db.price = clean_price(row[1])
+                    product_in_db.quantity = row[2]
+                    product_in_db.date_updated = new_date_updated
             session.commit()
 # product_id, product_name,product_price,product_quantity,date_updated
 
